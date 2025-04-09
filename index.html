@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>任务完成</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    animation: {
+                        'fade-in': 'fadeIn 0.5s ease-in',
+                        'scale-in': 'scaleIn 0.3s ease-out',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        },
+                        scaleIn: {
+                            '0%': { transform: 'scale(0.95)', opacity: '0' },
+                            '100%': { transform: 'scale(1)', opacity: '1' },
+                        },
+                    },
+                }
+            }
+        }
+    </script>
+    <style type="text/css">
+        .hover-scale { transition: transform 0.2s; }
+        .hover-scale:hover { transform: scale(1.02); }
+        [x-cloak] { display: none !important; }
+    </style>
+</head>
+<body class="min-h-screen transition-colors duration-300" x-data="{ darkMode: window.matchMedia('(prefers-color-scheme: dark)').matches }" :class="{ 'dark bg-gray-900': darkMode, 'bg-gray-50': !darkMode }">
+    <div class="container mx-auto px-4 py-8 md:py-16">
+        <!-- 主要内容卡片 -->
+        <div class="max-w-3xl mx-auto bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6 md:p-8 animate-fade-in hover-scale transition-all duration-300">
+            <!-- 顶部图标和标题 -->
+            <div class="text-center mb-8">
+                <div class="inline-block p-4 bg-green-100 dark:bg-green-900 rounded-full mb-4 animate-scale-in">
+                    <i class="fas fa-check-circle text-4xl text-green-500 dark:text-green-400"></i>
+                </div>
+                <h1 class="text-3xl md:text-4xl font-bold text-gray-800 dark:text-white mb-2">任务完成！</h1>
+                <p class="text-gray-600 dark:text-gray-300 text-lg">又完成了一个重要的里程碑</p>
+            </div>
+
+            <!-- 随机名言卡片 -->
+            <div class="bg-gray-50 dark:bg-gray-700 rounded-xl p-6 mb-8 animate-fade-in" x-data="{ quote: '' }" x-init="quote = await getRandomQuote()">
+                <div class="flex items-start space-x-4">
+                    <i class="fas fa-quote-left text-2xl text-green-500 dark:text-green-400 mt-1"></i>
+                    <div>
+                        <p class="text-gray-700 dark:text-gray-200 text-lg italic" x-text="quote.text"></p>
+                        <p class="text-gray-500 dark:text-gray-400 mt-2 text-right" x-text="'—— ' + quote.author"></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 统计数据卡片 -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                <div class="bg-blue-50 dark:bg-blue-900/30 p-4 rounded-xl animate-fade-in hover-scale">
+                    <div class="flex items-center space-x-3">
+                        <i class="fas fa-clock text-blue-500 dark:text-blue-400 text-xl"></i>
+                        <div>
+                            <h3 class="text-gray-800 dark:text-gray-200 font-semibold">完成用时</h3>
+                            <p class="text-gray-600 dark:text-gray-300" id="completionTime">计算中...</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-purple-50 dark:bg-purple-900/30 p-4 rounded-xl animate-fade-in hover-scale">
+                    <div class="flex items-center space-x-3">
+                        <i class="fas fa-star text-purple-500 dark:text-purple-400 text-xl"></i>
+                        <div>
+                            <h3 class="text-gray-800 dark:text-gray-200 font-semibold">今日完成</h3>
+                            <p class="text-gray-600 dark:text-gray-300" id="todayCompleted">计算中...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 鼓励文字 -->
+            <div class="text-center animate-fade-in">
+                <p class="text-gray-700 dark:text-gray-200 text-lg mb-6" id="encouragement"></p>
+                <button onclick="window.close()" class="bg-green-500 hover:bg-green-600 text-white px-8 py-3 rounded-full font-semibold transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50">
+                    <i class="fas fa-check mr-2"></i>确认完成
+                </button>
+            </div>
+        </div>
+
+        <!-- 深色模式切换按钮 -->
+        <div class="fixed top-4 right-4">
+            <button @click="darkMode = !darkMode" class="p-2 rounded-lg bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors duration-200">
+                <i class="fas" :class="{ 'fa-moon text-gray-700': !darkMode, 'fa-sun text-yellow-400': darkMode }"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Alpine.js -->
+    <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script>
+        // 随机名言数据
+        const quotes = [
+            { text: "成功不是终点，失败也不是终结，最重要的是继续前进的勇气。", author: "温斯顿·丘吉尔" },
+            { text: "生命不是等待暴风雨过去，而是学会在雨中跳舞。", author: "佚名" },
+            { text: "最大的竞争对手是自己。", author: "周恩来" },
+            { text: "把每一件平凡的事做好就是不平凡。", author: "董卿" },
+            { text: "一个人可以失败很多次，但是只要他没有开始责怪旁人，他还不是一个失败者。", author: "爱迪生" },
+            { text: "与其用华丽的外衣装饰自己，不如用知识武装自己。", author: "马克思" },
+            { text: "世界上最快乐的事，莫过于为理想而奋斗。", author: "苏格拉底" },
+            { text: "没有比人更高的山，没有比脚更长的路。", author: "闻一多" },
+            { text: "不要等待机会，而要创造机会。", author: "林肯" },
+            { text: "天才就是百分之一的灵感加上百分之九十九的汗水。", author: "爱迪生" }
+        ];
+
+        // 鼓励语句
+        const encouragements = [
+            "太棒了！你的努力终于得到了回报！",
+            "这只是开始，继续保持这份热情！",
+            "看看你取得的进步，为自己感到骄傲吧！",
+            "每一个小进步都是通向成功的基石！",
+            "你的坚持让不可能变成了可能！"
+        ];
+
+        // 获取随机名言
+        async function getRandomQuote() {
+            return quotes[Math.floor(Math.random() * quotes.length)];
+        }
+
+        // 页面加载完成后执行
+        document.addEventListener('DOMContentLoaded', () => {
+            // 设置随机鼓励语
+            const encouragement = encouragements[Math.floor(Math.random() * encouragements.length)];
+            document.getElementById('encouragement').textContent = encouragement;
+
+            // 设置完成时间（示例：随机1-60分钟）
+            const minutes = Math.floor(Math.random() * 60) + 1;
+            document.getElementById('completionTime').textContent = `${minutes} 分钟`;
+
+            // 设置今日完成数量（示例：随机1-10个）
+            const completed = Math.floor(Math.random() * 10) + 1;
+            document.getElementById('todayCompleted').textContent = `${completed} 个任务`;
+        });
+    </script>
+</body>
+</html>
