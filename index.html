@@ -6,87 +6,180 @@
     <title>任务完成</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js"></script>
     <script>
         tailwind.config = {
             darkMode: 'class',
             theme: {
                 extend: {
+                    colors: {
+                        primary: {
+                            DEFAULT: '#4ade80',
+                            dark: '#22c55e'
+                        },
+                        secondary: {
+                            DEFAULT: '#60a5fa',
+                            dark: '#3b82f6'
+                        },
+                        accent: {
+                            DEFAULT: '#f472b6',
+                            dark: '#ec4899'
+                        }
+                    },
                     animation: {
                         'fade-in': 'fadeIn 0.5s ease-in',
                         'scale-in': 'scaleIn 0.3s ease-out',
+                        'float': 'float 3s ease-in-out infinite',
+                        'bounce-soft': 'bounce-soft 2s ease-in-out infinite'
                     },
                     keyframes: {
                         fadeIn: {
                             '0%': { opacity: '0' },
-                            '100%': { opacity: '1' },
+                            '100%': { opacity: '1' }
                         },
                         scaleIn: {
                             '0%': { transform: 'scale(0.95)', opacity: '0' },
-                            '100%': { transform: 'scale(1)', opacity: '1' },
+                            '100%': { transform: 'scale(1)', opacity: '1' }
                         },
-                    },
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' }
+                        },
+                        'bounce-soft': {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-5px)' }
+                        }
+                    }
                 }
             }
         }
     </script>
     <style type="text/css">
+        :root {
+            --color-primary: #4ade80;
+            --color-secondary: #60a5fa;
+            --color-accent: #f472b6;
+        }
         .hover-scale { transition: transform 0.2s; }
         .hover-scale:hover { transform: scale(1.02); }
         [x-cloak] { display: none !important; }
+        .quote-card {
+            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.2) 100%);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+            position: relative;
+            overflow: hidden;
+        }
+        .quote-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(from 0deg at 50% 50%, transparent 0deg, var(--color-primary) 60deg, transparent 120deg);
+            animation: rotate 4s linear infinite;
+            opacity: 0.1;
+        }
+        .dark .quote-card {
+            background: linear-gradient(135deg, rgba(31,41,55,0.4) 0%, rgba(31,41,55,0.6) 100%);
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        .decorative-line {
+            position: relative;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--color-primary), transparent);
+            animation: pulse 2s ease-in-out infinite;
+        }
+        #particles-js {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+        .wave-bg {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: -1;
+            opacity: 0.1;
+            pointer-events: none;
+        }
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scaleX(1); opacity: 0.8; }
+            50% { transform: scaleX(1.1); opacity: 1; }
+        }
+        .svg-decoration {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            fill: var(--color-accent);
+            opacity: 0.1;
+            animation: float 3s ease-in-out infinite;
+        }
     </style>
 </head>
-<body class="min-h-screen transition-colors duration-300" x-data="{ darkMode: window.matchMedia('(prefers-color-scheme: dark)').matches }" :class="{ 'dark bg-gray-900': darkMode, 'bg-gray-50': !darkMode }">
+<body class="min-h-screen transition-colors duration-300 overflow-x-hidden" x-data="{ 
+    darkMode: window.matchMedia('(prefers-color-scheme: dark)').matches,
+    showConfetti: false
+}" :class="{ 'dark bg-gray-900': darkMode, 'bg-gray-50': !darkMode }">
+    <div id="particles-js"></div>
+    
     <div class="container mx-auto px-4 py-8 md:py-16">
+        <!-- SVG装饰元素 -->
+        <svg class="svg-decoration" style="top: 10%; left: 5%" viewBox="0 0 24 24">
+            <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
+        </svg>
+        <svg class="svg-decoration" style="top: 70%; right: 8%" viewBox="0 0 24 24">
+            <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
+        </svg>
+        <!-- 波浪背景 -->
+        <svg class="wave-bg" preserveAspectRatio="none" viewBox="0 0 1440 320">
+            <path fill="var(--color-primary)" fill-opacity="1" d="M0,160L48,144C96,128,192,96,288,106.7C384,117,480,171,576,165.3C672,160,768,96,864,74.7C960,53,1056,75,1152,106.7C1248,139,1344,181,1392,202.7L1440,224L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
+        </svg>
         <!-- 主要内容卡片 -->
-        <div class="max-w-3xl mx-auto bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6 md:p-8 animate-fade-in hover-scale transition-all duration-300">
+        <div class="max-w-4xl mx-auto bg-white/80 dark:bg-gray-800/80 rounded-2xl shadow-xl p-6 md:p-8 animate-fade-in hover-scale transition-all duration-300 relative overflow-hidden">
             <!-- 顶部图标和标题 -->
-            <div class="text-center mb-8">
-                <div class="inline-block p-4 bg-green-100 dark:bg-green-900 rounded-full mb-4 animate-scale-in">
-                    <i class="fas fa-check-circle text-4xl text-green-500 dark:text-green-400"></i>
+            <div class="text-center mb-12">
+                <div class="inline-block p-4 rounded-full mb-4 animate-scale-in relative" style="background: linear-gradient(135deg, var(--color-primary), var(--color-secondary))">
+                    <div class="absolute inset-0 rounded-full opacity-30" style="background: radial-gradient(circle at center, var(--color-accent), transparent 70%)"></div>
+                    <i class="fas fa-check-circle text-4xl" style="color: white; text-shadow: 0 2px 4px rgba(0,0,0,0.2)"></i>
                 </div>
                 <h1 class="text-3xl md:text-4xl font-bold text-gray-800 dark:text-white mb-2">任务完成！</h1>
-                <p class="text-gray-600 dark:text-gray-300 text-lg">又完成了一个重要的里程碑</p>
+                <p class="text-gray-600 dark:text-gray-300 text-lg">恭喜你完成了这个重要的里程碑</p>
             </div>
 
             <!-- 随机名言卡片 -->
-            <div class="bg-gray-50 dark:bg-gray-700 rounded-xl p-6 mb-8 animate-fade-in" x-data="{ quote: '' }" x-init="quote = await getRandomQuote()">
-                <div class="flex items-start space-x-4">
-                    <i class="fas fa-quote-left text-2xl text-green-500 dark:text-green-400 mt-1"></i>
-                    <div>
-                        <p class="text-gray-700 dark:text-gray-200 text-lg italic" x-text="quote.text"></p>
-                        <p class="text-gray-500 dark:text-gray-400 mt-2 text-right" x-text="'—— ' + quote.author"></p>
+            <div class="quote-card rounded-xl p-8 mb-12 animate-fade-in relative overflow-hidden group" x-data="{ quote: window.quotes[Math.floor(Math.random() * window.quotes.length)] }">
+                <i class="fas fa-quote-left absolute -top-2 -left-2 text-8xl text-green-500/10 dark:text-green-400/10 transform -rotate-12 transition-transform duration-300 group-hover:scale-110"></i>
+                <i class="fas fa-quote-right absolute -bottom-2 -right-2 text-8xl text-green-500/10 dark:text-green-400/10 transform rotate-12 transition-transform duration-300 group-hover:scale-110"></i>
+                
+                <div class="relative z-10">
+                    <p class="text-gray-700 dark:text-gray-200 text-xl leading-relaxed font-medium mb-6" x-text="quote.text"></p>
+                    <div class="flex items-center justify-end space-x-4">
+                        <div class="decorative-line flex-grow"></div>
+                        <p class="text-gray-500 dark:text-gray-400 font-serif italic" x-text="'—— ' + quote.author"></p>
                     </div>
                 </div>
             </div>
 
-            <!-- 统计数据卡片 -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-                <div class="bg-blue-50 dark:bg-blue-900/30 p-4 rounded-xl animate-fade-in hover-scale">
-                    <div class="flex items-center space-x-3">
-                        <i class="fas fa-clock text-blue-500 dark:text-blue-400 text-xl"></i>
-                        <div>
-                            <h3 class="text-gray-800 dark:text-gray-200 font-semibold">完成用时</h3>
-                            <p class="text-gray-600 dark:text-gray-300" id="completionTime">计算中...</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="bg-purple-50 dark:bg-purple-900/30 p-4 rounded-xl animate-fade-in hover-scale">
-                    <div class="flex items-center space-x-3">
-                        <i class="fas fa-star text-purple-500 dark:text-purple-400 text-xl"></i>
-                        <div>
-                            <h3 class="text-gray-800 dark:text-gray-200 font-semibold">今日完成</h3>
-                            <p class="text-gray-600 dark:text-gray-300" id="todayCompleted">计算中...</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 鼓励文字 -->
+            <!-- 鼓励文字和按钮 -->
             <div class="text-center animate-fade-in">
                 <p class="text-gray-700 dark:text-gray-200 text-lg mb-6" id="encouragement"></p>
-                <button onclick="window.close()" class="bg-green-500 hover:bg-green-600 text-white px-8 py-3 rounded-full font-semibold transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50">
-                    <i class="fas fa-check mr-2"></i>确认完成
-                </button>
+                <div class="flex justify-center space-x-4">
+                    <button onclick="window.close()" class="text-white px-8 py-3 rounded-full font-semibold transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-opacity-50 group" style="background-color: var(--color-primary); --tw-ring-color: var(--color-primary);">
+                        <i class="fas fa-check mr-2 group-hover:animate-bounce"></i>确认完成
+                    </button>
+                </div>
             </div>
         </div>
 
@@ -99,49 +192,124 @@
     </div>
 
     <!-- Alpine.js -->
-    <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <!-- 数据定义 -->
     <script>
         // 随机名言数据
-        const quotes = [
+        window.quotes = [
             { text: "成功不是终点，失败也不是终结，最重要的是继续前进的勇气。", author: "温斯顿·丘吉尔" },
             { text: "生命不是等待暴风雨过去，而是学会在雨中跳舞。", author: "佚名" },
-            { text: "最大的竞争对手是自己。", author: "周恩来" },
             { text: "把每一件平凡的事做好就是不平凡。", author: "董卿" },
-            { text: "一个人可以失败很多次，但是只要他没有开始责怪旁人，他还不是一个失败者。", author: "爱迪生" },
-            { text: "与其用华丽的外衣装饰自己，不如用知识武装自己。", author: "马克思" },
             { text: "世界上最快乐的事，莫过于为理想而奋斗。", author: "苏格拉底" },
-            { text: "没有比人更高的山，没有比脚更长的路。", author: "闻一多" },
             { text: "不要等待机会，而要创造机会。", author: "林肯" },
-            { text: "天才就是百分之一的灵感加上百分之九十九的汗水。", author: "爱迪生" }
+            { text: "人生如同故事，重要的不是有多长，而是有多精彩。", author: "塞涅卡" },
+            { text: "每一个不曾起舞的日子，都是对生命的辜负。", author: "尼采" },
+            { text: "当你感到疲惫时，请记住为什么当初开始。", author: "佚名" },
+            { text: "生活就像骑自行车，为了保持平衡，你必须不断前进。", author: "爱因斯坦" },
+            { text: "成功的秘诀在于始终如一地忠于目标。", author: "本杰明·迪斯雷利" },
+            { text: "不要等待完美的时刻，抓住现在，让它变得完美。", author: "未知" },
+            { text: "你生命中最美好的日子是你决定你的生活属于你自己的日子。", author: "未知" },
+            { text: "困难越大，克服它时的荣耀就越大。", author: "西塞罗" },
+            { text: "未来属于那些相信梦想之美的人。", author: "埃莉诺·罗斯福" },
+            { text: "天才是百分之一的灵感加上百分之九十九的汗水。", author: "爱迪生" },
+            { text: "不积跬步，无以至千里；不积小流，无以成江海。", author: "荀子" },
+            { text: "路漫漫其修远兮，吾将上下而求索。", author: "屈原" },
+            { text: "志不立，天下无可成之事。", author: "王阳明" },
+            { text: "千里之行，始于足下。", author: "老子" },
+            { text: "学而不思则罔，思而不学则殆。", author: "孔子" },
+            { text: "业精于勤，荒于嬉；行成于思，毁于随。", author: "韩愈" },
+            { text: "时间就像海绵里的水，只要愿挤，总还是有的。", author: "鲁迅" },
+            { text: "世上无难事，只要肯登攀。", author: "毛泽东" },
+            { text: "宝剑锋从磨砺出，梅花香自苦寒来。", author: "《警世贤文》" },
+            { text: "长风破浪会有时，直挂云帆济沧海。", author: "李白" }
         ];
 
         // 鼓励语句
         const encouragements = [
-            "太棒了！你的努力终于得到了回报！",
-            "这只是开始，继续保持这份热情！",
-            "看看你取得的进步，为自己感到骄傲吧！",
-            "每一个小进步都是通向成功的基石！",
-            "你的坚持让不可能变成了可能！"
+            "继续保持这份热情！",
+            "每一个进步都值得庆贺！",
+            "这是一个重要的里程碑！",
+            "继续前进，未来可期！",
+            "这一刻，为自己感到骄傲！",
+            "你的努力正在创造奇迹！",
+            "今天的付出是明天的收获！",
+            "你已经超越了昨天的自己！",
+            "坚持就是胜利，你已经走得很远了！",
+            "相信自己，你比想象中更强大！",
+            "你的潜力超乎你的想象！",
+            "每一次尝试都是向成功迈进的一步！",
+            "今天的努力是明天的成就！",
+            "你的坚持终将开花结果！",
+            "成功就在不远处等着你！",
+            "你已经战胜了最大的敌人——昨天的自己！",
+            "你的进步令人惊叹！",
+            "保持专注，胜利就在眼前！",
+            "你的付出终将获得回报！",
+            "让今天的努力成为明天的骄傲！"
         ];
 
-        // 获取随机名言
-        async function getRandomQuote() {
-            return quotes[Math.floor(Math.random() * quotes.length)];
-        }
+        // 8种预设配色方案
+        const colorSchemes = [
+            { primary: '#3b82f6', secondary: '#10b981', accent: '#f59e0b' }, // 蓝色-绿色-橙色
+            { primary: '#8b5cf6', secondary: '#ec4899', accent: '#f0abfc' }, // 紫色-粉色-淡紫
+            { primary: '#2563eb', secondary: '#059669', accent: '#d97706' }, // 深蓝-深绿-深橙
+            { primary: '#7c3aed', secondary: '#db2777', accent: '#fbbf24' }, // 深紫-深粉-金色
+            { primary: '#1d4ed8', secondary: '#047857', accent: '#b45309' }, // 海军蓝-森林绿-铜色
+            { primary: '#6d28d9', secondary: '#be185d', accent: '#f59e0b' }, // 皇家紫-玫瑰红-琥珀
+            { primary: '#4338ca', secondary: '#0d9488', accent: '#d97706' }, // 靛蓝-蓝绿色-铜色
+            { primary: '#5b21b6', secondary: '#9d174d', accent: '#f59e0b' }  // 深紫-深红-琥珀
+        ];
 
         // 页面加载完成后执行
         document.addEventListener('DOMContentLoaded', () => {
+            // 随机选择配色方案
+            const scheme = colorSchemes[Math.floor(Math.random() * colorSchemes.length)];
+            document.documentElement.style.setProperty('--color-primary', scheme.primary);
+            document.documentElement.style.setProperty('--color-secondary', scheme.secondary);
+            document.documentElement.style.setProperty('--color-accent', scheme.accent);
+
             // 设置随机鼓励语
             const encouragement = encouragements[Math.floor(Math.random() * encouragements.length)];
             document.getElementById('encouragement').textContent = encouragement;
 
-            // 设置完成时间（示例：随机1-60分钟）
-            const minutes = Math.floor(Math.random() * 60) + 1;
-            document.getElementById('completionTime').textContent = `${minutes} 分钟`;
-
-            // 设置今日完成数量（示例：随机1-10个）
-            const completed = Math.floor(Math.random() * 10) + 1;
-            document.getElementById('todayCompleted').textContent = `${completed} 个任务`;
+            // 初始化粒子效果
+            particlesJS('particles-js', {
+                particles: {
+                    number: { value: 120, density: { enable: true, value_area: 1000 } },
+                    color: { value: [scheme.primary, scheme.secondary, scheme.accent] },
+                    shape: { 
+                        type: ['circle', 'triangle', 'star'],
+                        stroke: { width: 0, color: '#000000' },
+                        polygon: { nb_sides: 5 }
+                    },
+                    opacity: { value: 0.6, random: true, anim: { enable: true, speed: 1, opacity_min: 0.1, sync: false } },
+                    size: { value: 4, random: true, anim: { enable: true, speed: 2, size_min: 0.1, sync: false } },
+                    line_linked: { enable: true, distance: 150, color: scheme.primary, opacity: 0.4, width: 1 },
+                    move: { 
+                        enable: true, 
+                        speed: 1.5,
+                        direction: 'none',
+                        random: true,
+                        straight: false,
+                        out_mode: 'bounce',
+                        bounce: true,
+                        attract: { enable: true, rotateX: 600, rotateY: 1200 }
+                    }
+                },
+                interactivity: {
+                    detect_on: 'canvas',
+                    events: {
+                        onhover: { enable: true, mode: 'bubble' },
+                        onclick: { enable: true, mode: 'repulse' },
+                        resize: true
+                    },
+                    modes: {
+                        bubble: { distance: 200, size: 6, duration: 2, opacity: 0.8, speed: 3 },
+                        repulse: { distance: 200, duration: 0.4 }
+                    }
+                },
+                retina_detect: true
+            });
         });
     </script>
 </body>
